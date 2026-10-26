@@ -115,6 +115,7 @@ const sashTail=new THREE.Mesh(new THREE.BoxGeometry(.08,.58,.035),blueSilk); sas
 // open folding fan held in front
 for(let i=-3;i<=3;i++){const a=i*.16; const fan=new THREE.Mesh(new THREE.BoxGeometry(.025,.62,.025),goldLi); fan.position.set(i*.065,2.52,.42); fan.rotation.z=a; liqing.add(fan);}
 const fanArc=new THREE.Mesh(new THREE.TorusGeometry(.30,.025,8,32,Math.PI),porcelain); fanArc.position.set(0,2.54,.42); fanArc.rotation.x=Math.PI/2; liqing.add(fanArc);
+const headParts = liqing.children.filter(o => o.position.y > 2.9);
 
 const initial = { yaw: .35, pitch: -.035, distance: 7.7 };
 let yaw = initial.yaw, pitch = initial.pitch, distance = initial.distance;
@@ -133,11 +134,13 @@ let lastFrame = 0, actionUntil = 0, actionStart = 0;
 renderer.setAnimationLoop((time) => {
   if (time - lastFrame < 33) return; lastFrame = time;
   if (actionUntil && time < actionUntil) {
-    const p = (time - actionStart) / 1100;
-    const wave = Math.sin(p * Math.PI * 2) * .42;
+    const p = (time - actionStart) / 1900;
+    const wave = Math.sin(p * Math.PI * 4) * .42;
     liqing.rotation.y = wave;
     liqing.position.y = Math.sin(p * Math.PI * 2) * .035;
-  } else if (actionUntil) { liqing.rotation.y = 0; liqing.position.y = 0; actionUntil = 0; }
+    const nod = Math.sin(p * Math.PI * 4) * .16;
+    for (const h of headParts) h.rotation.x = nod;
+  } else if (actionUntil) { liqing.rotation.y = 0; liqing.position.y = 0; for (const h of headParts) h.rotation.x = 0; actionUntil = 0; }
   renderer.render(scene, camera);
 });
 
@@ -161,9 +164,9 @@ mount.addEventListener('click', event => {
   const rect = mount.getBoundingClientRect(); pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1; pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
   raycaster.setFromCamera(pointer, camera);
   if (raycaster.intersectObjects(liqing.children, true).length) {
-    actionStart = performance.now(); actionUntil = actionStart + 1100;
+    actionStart = performance.now(); actionUntil = actionStart + 1900;
     objectLabel.textContent = '动作：李清照转身致意';
-    setTimeout(() => { objectLabel.textContent = '李清照 · 参考图艺术化三维造型'; }, 1500);
+    setTimeout(() => { objectLabel.textContent = '李清照 · 参考图艺术化三维造型'; }, 2200);
   }
 });
 document.querySelector('#reset').addEventListener('click', () => { yaw = initial.yaw; pitch = initial.pitch; distance = initial.distance; updateCamera(); });
