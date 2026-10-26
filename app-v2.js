@@ -139,8 +139,8 @@ renderer.setAnimationLoop((time) => {
     if (actionMode === 1) {
       // 前空翻：整个人绕横轴翻转一整圈，中点时身体明确倒置。
       liqing.rotation.y = Math.sin(p * Math.PI) * .18;
-      liqing.rotation.x = p * Math.PI * 2;
-      liqing.rotation.z = Math.sin(p * Math.PI) * .28;
+      liqing.rotation.x = Math.sin(p * Math.PI * 2) * .32;
+      liqing.rotation.z = p * Math.PI * 2;
       liqing.position.y = Math.sin(p * Math.PI) * 1.18;
       const squash = 1 + Math.sin(p * Math.PI) * .10;
       liqing.scale.set(1 / squash, squash, 1 / squash);
@@ -206,6 +206,7 @@ status.textContent = '展厅已就绪';
 requestAnimationFrame(() => loading.classList.add('done'));
 // The VR capability check must not block the normal 3D gallery from appearing.
 setupVR().catch(error => console.warn('WebXR is unavailable; standard 3D remains active.', error));
+
 
 
 
