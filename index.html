@@ -31,9 +31,16 @@
       <footer><span>触摸模型，探索立体细节</span><span>建模演示 · 2026</span></footer>
     </section>
   </main>
-  <script type="module" src="app.js?v=20261024-scan1"></script>
+  <script>
+window.__show3DError=function(m){var b=document.getElementById('loading'),t=document.getElementById('status');if(b&&t&&!b.classList.contains('done')){t.textContent='模型加载失败：'+m+'。请刷新页面重试';b.classList.add('error')}};
+window.addEventListener('error',function(e){if(e&&e.message)window.__show3DError(e.message)});
+window.addEventListener('unhandledrejection',function(e){window.__show3DError((e.reason&&e.reason.message)||'脚本运行错误')});
+setTimeout(function(){var b=document.getElementById('loading');if(b&&!b.classList.contains('done')&&!b.classList.contains('error'))window.__show3DError('资源响应超时')},12000);
+</script>
+<script type="module" src="app.js?v=20261024-scan2"></script>
 </body>
 </html>
+
 
 
 
