@@ -129,8 +129,17 @@ function resize() {
   renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
 }
 new ResizeObserver(resize).observe(mount); resize(); updateCamera();
-let lastFrame = 0;
-renderer.setAnimationLoop((time) => { if (time - lastFrame < 33) return; lastFrame = time; renderer.render(scene, camera); });
+let lastFrame = 0, actionUntil = 0, actionStart = 0;
+renderer.setAnimationLoop((time) => {
+  if (time - lastFrame < 33) return; lastFrame = time;
+  if (actionUntil && time < actionUntil) {
+    const p = (time - actionStart) / 1100;
+    const wave = Math.sin(p * Math.PI * 2) * .12;
+    liqing.rotation.y = wave;
+    liqing.position.y = Math.sin(p * Math.PI * 2) * .035;
+  } else if (actionUntil) { liqing.rotation.y = 0; liqing.position.y = 0; actionUntil = 0; }
+  renderer.render(scene, camera);
+});
 
 let pointers = new Map(), lastX = 0, lastY = 0, pinchStart = 0, distanceStart = distance;
 mount.addEventListener('pointerdown', event => {
@@ -147,6 +156,15 @@ mount.addEventListener('pointermove', event => {
 function endPointer(event) { pointers.delete(event.pointerId); if (pointers.size === 1) { const p = [...pointers.values()][0]; lastX = p.x; lastY = p.y; } }
 mount.addEventListener('pointerup', endPointer); mount.addEventListener('pointercancel', endPointer);
 mount.addEventListener('wheel', event => { event.preventDefault(); distance = THREE.MathUtils.clamp(distance + event.deltaY * .004, 4.2, 11); updateCamera(); }, { passive: false });
+const raycaster = new THREE.Raycaster(), pointer = new THREE.Vector2();
+mount.addEventListener('click', event => {
+  const rect = mount.getBoundingClientRect(); pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1; pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+  raycaster.setFromCamera(pointer, camera);
+  if (raycaster.intersectObjects(liqing.children, true).length) {
+    actionStart = performance.now(); actionUntil = actionStart + 1100;
+    status.textContent = '已触发动作：李清照轻轻转身致意'; loading.classList.remove('done'); setTimeout(() => loading.classList.add('done'), 1200);
+  }
+});
 document.querySelector('#reset').addEventListener('click', () => { yaw = initial.yaw; pitch = initial.pitch; distance = initial.distance; updateCamera(); });
 const objectLabel = document.querySelector('#objectLabel');
 document.querySelectorAll('.model-choice').forEach(button => button.addEventListener('click', () => {
