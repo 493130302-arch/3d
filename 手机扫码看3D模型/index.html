@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta name="theme-color" content="#171711">
+  <title>中国古代陶俑数字展馆</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="data:,">
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="中国古代陶俑数字展馆首页"><span class="brand-mark">陶</span><span><small>数字展馆 · DIGITAL MUSEUM</small><strong>中国古代陶俑</strong></span></a>
+      <button id="vrButton" class="vr-button" type="button" hidden>◉ VR</button>
+    </header>
+    <section class="stage" aria-label="陶俑三维展示区域">
+      <div class="stage-wash"></div>
+      <div class="eyebrow"><i></i> 线上展厅 <span>·</span> 造像与生活</div>
+      <div id="scene" role="img" aria-label="可旋转、缩放的中国古代陶俑三维演示模型"></div>
+      <div class="loading" id="loading"><span class="spinner"></span><span id="status">正在布置展厅…</span></div>
+      <div class="hint" id="hint"><span>↔</span> 单指拖动旋转 <b>·</b> 双指缩放</div>
+      <button class="reset" id="reset" type="button" aria-label="重置模型视角"><span>⟳</span> 重置视角</button><div class="model-switch" role="group"><button class="model-choice active" data-model="mask" type="button">青铜面具</button><button class="model-choice" data-model="mural" type="button">壁画人物</button></div>
+      <div class="object-label"><span class="label-line"></span><span id="objectLabel">青铜面具 · 图片启发的演示造型</span></div>
+    </section>
+    <section class="info">
+      <div class="info-heading"><div><div class="kicker">展品档案 <span>OBJECT FILE</span></div><h1>古代陶俑</h1></div><div class="seal">数字<br>展品</div></div>
+      <p class="lead">泥土塑形，留存古人的生活想象。</p>
+      <div class="facts"><div><small>年代背景</small><strong>汉至唐代 · 通用介绍</strong></div><div><small>常见材质</small><strong>陶土、灰陶或彩绘陶</strong></div></div>
+      <div class="description"><p>陶俑是以陶土制作的人物或动物形象，常见于中国古代墓葬中，反映当时的社会生活与丧葬观念。不同地区、时期的器形与工艺各异。</p><p class="note">本页未对应某一件经核实的馆藏文物。三维人物为程序生成的教育演示模型，其服饰、姿态与表面纹理均属设计表达，不作为考古事实。</p></div>
+      <footer><span>触摸模型，探索立体细节</span><span>建模演示 · 2026</span></footer>
+    </section>
+  </main>
+  <script>
+window.__show3DError=function(m){var b=document.getElementById('loading'),t=document.getElementById('status');if(b&&t&&!b.classList.contains('done')){t.textContent='模型加载失败：'+m+'。请刷新页面重试';b.classList.add('error')}};
+window.addEventListener('error',function(e){if(e&&e.message)window.__show3DError(e.message)});
+window.addEventListener('unhandledrejection',function(e){window.__show3DError((e.reason&&e.reason.message)||'脚本运行错误')});
+setTimeout(function(){var b=document.getElementById('loading');if(b&&!b.classList.contains('done')&&!b.classList.contains('error'))window.__show3DError('资源响应超时')},12000);
+</script>
+<script type="module" src="app.js?v=20261024-scan2"></script>
+</body>
+</html>
+
+
+
+
+
+
+
