@@ -134,21 +134,21 @@ let lastFrame = 0, actionUntil = 0, actionStart = 0, actionMode = 0;
 renderer.setAnimationLoop((time) => {
   if (time - lastFrame < 33) return; lastFrame = time;
   if (actionUntil && time < actionUntil) {
-    const p = Math.min(1, Math.max(0, (time - actionStart) / 1900));
+    const p = Math.min(1, Math.max(0, (time - actionStart) / 3200));
     const wave = Math.sin(p * Math.PI * 4) * .42;
     if (actionMode === 1) {
       // 前空翻：整个人绕横轴翻转一整圈，中点时身体明确倒置。
       liqing.rotation.y = Math.sin(p * Math.PI) * .18;
       liqing.rotation.x = Math.sin(p * Math.PI * 2) * .32;
       liqing.rotation.z = p * Math.PI * 2;
-      liqing.position.y = Math.sin(p * Math.PI) * 1.18;
+      liqing.position.y = Math.sin(p * Math.PI) * 1.55;
       const squash = 1 + Math.sin(p * Math.PI) * .10;
       liqing.scale.set(1 / squash, squash, 1 / squash);
     } else {
       liqing.rotation.y = wave;
       liqing.rotation.x = 0;
       liqing.rotation.z = 0;
-      liqing.position.y = Math.sin(p * Math.PI * 2) * .035;
+      liqing.position.y = Math.sin(p * Math.PI * 2) * .028;
       liqing.scale.set(1, 1, 1);
     }    const nod = Math.sin(p * Math.PI * 4) * .16;
     for (const h of headParts) h.rotation.x = nod;
@@ -179,7 +179,7 @@ function endPointer(event) {
 }
 mount.addEventListener('pointerup', endPointer); mount.addEventListener('pointercancel', endPointer);
 mount.addEventListener('wheel', event => { event.preventDefault(); distance = THREE.MathUtils.clamp(distance + event.deltaY * .004, 4.2, 11); updateCamera(); }, { passive: false });
-function triggerLiAction(){ actionMode=(actionMode+1)%2; actionStart=performance.now(); actionUntil=actionStart+(actionMode===1?1800:1900); objectLabel.textContent=actionMode===1?'动作：前空翻（上升翻转回落）':'动作：摇头、点头、转身'; setTimeout(()=>{objectLabel.textContent='李清照 · 参考图艺术化三维造型'},2400); }
+function triggerLiAction(){ actionMode=(actionMode+1)%2; actionStart=performance.now(); actionUntil=actionStart+(actionMode===1?3200:2400); objectLabel.textContent=actionMode===1?'动作：前空翻（上升翻转回落）':'动作：摇头、点头、转身'; setTimeout(()=>{objectLabel.textContent='李清照 · 参考图艺术化三维造型'},3900); }
 document.querySelector('#reset').addEventListener('click', () => { yaw = initial.yaw; pitch = initial.pitch; distance = initial.distance; updateCamera(); });
 const objectLabel = document.querySelector('#objectLabel');
 document.querySelectorAll('.model-choice').forEach(button => button.addEventListener('click', () => {
@@ -206,6 +206,7 @@ status.textContent = '展厅已就绪';
 requestAnimationFrame(() => loading.classList.add('done'));
 // The VR capability check must not block the normal 3D gallery from appearing.
 setupVR().catch(error => console.warn('WebXR is unavailable; standard 3D remains active.', error));
+
 
 
 
