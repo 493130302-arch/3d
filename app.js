@@ -144,9 +144,10 @@ renderer.setAnimationLoop((time) => {
   renderer.render(scene, camera);
 });
 
-let pointers = new Map(), lastX = 0, lastY = 0, pinchStart = 0, distanceStart = distance;
+let pointers = new Map(), lastX = 0, lastY = 0, pinchStart = 0, distanceStart = distance, pressStart = null;
 mount.addEventListener('pointerdown', event => {
   mount.setPointerCapture(event.pointerId); pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+  if (pointers.size === 1) pressStart = {x:event.clientX,y:event.clientY,time:performance.now()};
   if (pointers.size === 1) { lastX = event.clientX; lastY = event.clientY; }
   if (pointers.size === 2) { const [a, b] = [...pointers.values()]; pinchStart = Math.hypot(a.x - b.x, a.y - b.y); distanceStart = distance; }
 });
@@ -156,17 +157,23 @@ mount.addEventListener('pointermove', event => {
   if (pointers.size === 1) { yaw += (event.clientX - lastX) * .009; pitch = THREE.MathUtils.clamp(pitch + (event.clientY - lastY) * .006, -.65, .55); lastX = event.clientX; lastY = event.clientY; updateCamera(); }
   else if (pointers.size >= 2) { const [a, b] = [...pointers.values()]; const span = Math.hypot(a.x - b.x, a.y - b.y); if (pinchStart) distance = THREE.MathUtils.clamp(distanceStart * pinchStart / span, 4.2, 11); updateCamera(); }
 });
-function endPointer(event) { pointers.delete(event.pointerId); if (pointers.size === 1) { const p = [...pointers.values()][0]; lastX = p.x; lastY = p.y; } }
+function endPointer(event) {
+  if (pressStart && pointers.size === 1) {
+    const moved=Math.hypot(event.clientX-pressStart.x,event.clientY-pressStart.y);
+    const rect=mount.getBoundingClientRect(); const inside=event.clientX>rect.left+rect.width*.22 && event.clientX<rect.left+rect.width*.78 && event.clientY>rect.top+rect.height*.08 && event.clientY<rect.top+rect.height*.72;
+    if (moved<12 && inside) triggerLiAction();
+  }
+  pointers.delete(event.pointerId); pressStart=null; if (pointers.size === 1) { const p = [...pointers.values()][0]; lastX = p.x; lastY = p.y; }
+}
 mount.addEventListener('pointerup', endPointer); mount.addEventListener('pointercancel', endPointer);
 mount.addEventListener('wheel', event => { event.preventDefault(); distance = THREE.MathUtils.clamp(distance + event.deltaY * .004, 4.2, 11); updateCamera(); }, { passive: false });
+function triggerLiAction(){ actionStart=performance.now(); actionUntil=actionStart+1900; objectLabel.textContent='动作：摇头、点头、转身'; setTimeout(()=>{objectLabel.textContent='李清照 · 参考图艺术化三维造型'},2200); }
 const raycaster = new THREE.Raycaster(), pointer = new THREE.Vector2();
 mount.addEventListener('click', event => {
   const rect = mount.getBoundingClientRect(); pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1; pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
   raycaster.setFromCamera(pointer, camera);
   if (raycaster.intersectObjects(liqing.children, true).length) {
-    actionStart = performance.now(); actionUntil = actionStart + 1900;
-    objectLabel.textContent = '动作：李清照转身致意';
-    setTimeout(() => { objectLabel.textContent = '李清照 · 参考图艺术化三维造型'; }, 2200);
+    triggerLiAction();
   }
 });
 document.querySelector('#reset').addEventListener('click', () => { yaw = initial.yaw; pitch = initial.pitch; distance = initial.distance; updateCamera(); });
