@@ -169,14 +169,6 @@ function endPointer(event) {
 mount.addEventListener('pointerup', endPointer); mount.addEventListener('pointercancel', endPointer);
 mount.addEventListener('wheel', event => { event.preventDefault(); distance = THREE.MathUtils.clamp(distance + event.deltaY * .004, 4.2, 11); updateCamera(); }, { passive: false });
 function triggerLiAction(){ actionMode=(actionMode+1)%2; actionStart=performance.now(); actionUntil=actionStart+(actionMode===1?1500:1900); objectLabel.textContent=actionMode===1?'动作：前空翻':'动作：摇头、点头、转身'; setTimeout(()=>{objectLabel.textContent='李清照 · 参考图艺术化三维造型'},2200); }
-const raycaster = new THREE.Raycaster(), pointer = new THREE.Vector2();
-mount.addEventListener('click', event => {
-  const rect = mount.getBoundingClientRect(); pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1; pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-  raycaster.setFromCamera(pointer, camera);
-  if (raycaster.intersectObjects(liqing.children, true).length) {
-    triggerLiAction();
-  }
-});
 document.querySelector('#reset').addEventListener('click', () => { yaw = initial.yaw; pitch = initial.pitch; distance = initial.distance; updateCamera(); });
 const objectLabel = document.querySelector('#objectLabel');
 document.querySelectorAll('.model-choice').forEach(button => button.addEventListener('click', () => {
