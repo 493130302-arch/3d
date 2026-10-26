@@ -135,7 +135,7 @@ renderer.setAnimationLoop((time) => {
   if (time - lastFrame < 33) return; lastFrame = time;
   if (actionUntil && time < actionUntil) {
     const p = Math.min(1, Math.max(0, (time - actionStart) / 3200));
-    const wave = Math.sin(p * Math.PI * 4) * .42;
+    const wave = Math.sin(p * Math.PI * 4) * 1.05;
     if (actionMode === 1) {
       // 前空翻：整个人绕横轴翻转一整圈，中点时身体明确倒置。
       liqing.rotation.y = Math.sin(p * Math.PI) * .18;
@@ -150,9 +150,9 @@ renderer.setAnimationLoop((time) => {
       liqing.rotation.z = 0;
       liqing.position.y = Math.sin(p * Math.PI * 2) * .028;
       liqing.scale.set(1, 1, 1);
-    }    const nod = Math.sin(p * Math.PI * 4) * .16;
+    }    const nod = actionMode === 1 ? Math.sin(p * Math.PI * 4) * .22 : Math.sin(p * Math.PI * 4) * .42;
     for (const h of headParts) h.rotation.x = nod;
-  } else if (actionUntil) { liqing.rotation.x = 0; liqing.rotation.y = 0; liqing.rotation.z = 0; liqing.position.y = 0; liqing.scale.set(1, 1, 1); for (const h of headParts) h.rotation.x = 0; actionUntil = 0; }
+  } else if (actionUntil) { liqing.rotation.x = 0; liqing.rotation.y = 0; liqing.rotation.z = 0; liqing.position.x = 0; liqing.position.y = 0; liqing.scale.set(1, 1, 1); for (const h of headParts) h.rotation.x = 0; actionUntil = 0; }
   renderer.render(scene, camera);
 });
 
@@ -206,6 +206,7 @@ status.textContent = '展厅已就绪';
 requestAnimationFrame(() => loading.classList.add('done'));
 // The VR capability check must not block the normal 3D gallery from appearing.
 setupVR().catch(error => console.warn('WebXR is unavailable; standard 3D remains active.', error));
+
 
 
 
