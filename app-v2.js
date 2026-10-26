@@ -134,15 +134,25 @@ let lastFrame = 0, actionUntil = 0, actionStart = 0, actionMode = 0;
 renderer.setAnimationLoop((time) => {
   if (time - lastFrame < 33) return; lastFrame = time;
   if (actionUntil && time < actionUntil) {
-    const p = (time - actionStart) / 1900;
+    const p = Math.min(1, Math.max(0, (time - actionStart) / 1900));
     const wave = Math.sin(p * Math.PI * 4) * .42;
-    liqing.rotation.y = actionMode === 1 ? 0 : wave;
-    liqing.rotation.x = actionMode === 1 ? p * Math.PI * 2 : 0;
-    liqing.rotation.z = actionMode === 1 ? p * Math.PI * 2 : 0;
-    liqing.position.y = actionMode === 1 ? Math.sin(Math.PI * p) * .85 : Math.sin(p * Math.PI * 2) * .035;
-    const nod = Math.sin(p * Math.PI * 4) * .16;
+    if (actionMode === 1) {
+      // 前空翻：整个人绕横轴翻转一整圈，中点时身体明确倒置。
+      liqing.rotation.y = Math.sin(p * Math.PI) * .18;
+      liqing.rotation.x = p * Math.PI * 2;
+      liqing.rotation.z = Math.sin(p * Math.PI) * .28;
+      liqing.position.y = Math.sin(p * Math.PI) * 1.18;
+      const squash = 1 + Math.sin(p * Math.PI) * .10;
+      liqing.scale.set(1 / squash, squash, 1 / squash);
+    } else {
+      liqing.rotation.y = wave;
+      liqing.rotation.x = 0;
+      liqing.rotation.z = 0;
+      liqing.position.y = Math.sin(p * Math.PI * 2) * .035;
+      liqing.scale.set(1, 1, 1);
+    }    const nod = Math.sin(p * Math.PI * 4) * .16;
     for (const h of headParts) h.rotation.x = nod;
-  } else if (actionUntil) { liqing.rotation.x = 0; liqing.rotation.y = 0; liqing.rotation.z = 0; liqing.position.y = 0; for (const h of headParts) h.rotation.x = 0; actionUntil = 0; }
+  } else if (actionUntil) { liqing.rotation.x = 0; liqing.rotation.y = 0; liqing.rotation.z = 0; liqing.position.y = 0; liqing.scale.set(1, 1, 1); for (const h of headParts) h.rotation.x = 0; actionUntil = 0; }
   renderer.render(scene, camera);
 });
 
@@ -196,5 +206,6 @@ status.textContent = '展厅已就绪';
 requestAnimationFrame(() => loading.classList.add('done'));
 // The VR capability check must not block the normal 3D gallery from appearing.
 setupVR().catch(error => console.warn('WebXR is unavailable; standard 3D remains active.', error));
+
 
 
