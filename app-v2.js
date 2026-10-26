@@ -172,7 +172,7 @@ mount.addEventListener('pointermove', event => {
 function endPointer(event) {
   if (pressStart && pointers.size === 1) {
     const moved=Math.hypot(event.clientX-pressStart.x,event.clientY-pressStart.y);
-    const rect=mount.getBoundingClientRect(); const inside=event.clientX>rect.left+rect.width*.22 && event.clientX<rect.left+rect.width*.78 && event.clientY>rect.top+rect.height*.08 && event.clientY<rect.top+rect.height*.72;
+    const rect=mount.getBoundingClientRect(); const inside=event.clientX>=rect.left && event.clientX<=rect.right && event.clientY>=rect.top && event.clientY<=rect.bottom;
     if (moved<12 && inside) triggerLiAction();
   }
   pointers.delete(event.pointerId); pressStart=null; if (pointers.size === 1) { const p = [...pointers.values()][0]; lastX = p.x; lastY = p.y; }
@@ -206,6 +206,7 @@ status.textContent = '展厅已就绪';
 requestAnimationFrame(() => loading.classList.add('done'));
 // The VR capability check must not block the normal 3D gallery from appearing.
 setupVR().catch(error => console.warn('WebXR is unavailable; standard 3D remains active.', error));
+
 
 
 
