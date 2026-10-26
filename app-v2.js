@@ -179,7 +179,7 @@ function endPointer(event) {
 }
 mount.addEventListener('pointerup', endPointer); mount.addEventListener('pointercancel', endPointer);
 mount.addEventListener('wheel', event => { event.preventDefault(); distance = THREE.MathUtils.clamp(distance + event.deltaY * .004, 4.2, 11); updateCamera(); }, { passive: false });
-function triggerLiAction(){ actionMode=(actionMode+1)%2; actionStart=performance.now(); actionUntil=actionStart+(actionMode===1?3200:2400); objectLabel.textContent=actionMode===1?'第一次点击：前空翻（慢速整身翻转）':'第二次点击：摇头、点头、转身'; setTimeout(()=>{objectLabel.textContent='点击人物：第一次前空翻 · 第二次摇头点头转身'},3900); }
+function triggerLiAction(){ if (actionUntil && performance.now() < actionUntil) return; actionMode=(actionMode+1)%2; actionStart=performance.now(); actionUntil=actionStart+(actionMode===1?3200:2400); objectLabel.textContent=actionMode===1?'第一次点击：前空翻（慢速整身翻转）':'第二次点击：摇头、点头、转身'; setTimeout(()=>{objectLabel.textContent='点击人物：第一次前空翻 · 第二次摇头点头转身'},3900); }
 document.querySelector('#reset').addEventListener('click', () => { yaw = initial.yaw; pitch = initial.pitch; distance = initial.distance; updateCamera(); });
 const objectLabel = document.querySelector('#objectLabel');
 document.querySelectorAll('.model-choice').forEach(button => button.addEventListener('click', () => {
@@ -206,6 +206,7 @@ status.textContent = '展厅已就绪';
 requestAnimationFrame(() => loading.classList.add('done'));
 // The VR capability check must not block the normal 3D gallery from appearing.
 setupVR().catch(error => console.warn('WebXR is unavailable; standard 3D remains active.', error));
+
 
 
 
