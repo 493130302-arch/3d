@@ -37,9 +37,10 @@ window.addEventListener('error',function(e){if(e&&e.message)window.__show3DError
 window.addEventListener('unhandledrejection',function(e){window.__show3DError((e.reason&&e.reason.message)||'脚本运行错误')});
 setTimeout(function(){var b=document.getElementById('loading');if(b&&!b.classList.contains('done')&&!b.classList.contains('error'))window.__show3DError('资源响应超时')},12000);
 </script>
-<script type="module" src="app.js?v=20261027-flip2"></script>
+<script type="module" src="app-v2.js"></script>
 </body>
 </html>
+
 
 
 
