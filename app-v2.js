@@ -138,10 +138,11 @@ renderer.setAnimationLoop((time) => {
     const wave = Math.sin(p * Math.PI * 4) * .42;
     liqing.rotation.y = actionMode === 1 ? 0 : wave;
     liqing.rotation.x = actionMode === 1 ? p * Math.PI * 2 : 0;
-    liqing.position.y = Math.sin(p * Math.PI * 2) * .035;
+    liqing.rotation.z = actionMode === 1 ? p * Math.PI * 2 : 0;
+    liqing.position.y = actionMode === 1 ? Math.sin(Math.PI * p) * .85 : Math.sin(p * Math.PI * 2) * .035;
     const nod = Math.sin(p * Math.PI * 4) * .16;
     for (const h of headParts) h.rotation.x = nod;
-  } else if (actionUntil) { liqing.rotation.x = 0; liqing.rotation.y = 0; liqing.position.y = 0; for (const h of headParts) h.rotation.x = 0; actionUntil = 0; }
+  } else if (actionUntil) { liqing.rotation.x = 0; liqing.rotation.y = 0; liqing.rotation.z = 0; liqing.position.y = 0; for (const h of headParts) h.rotation.x = 0; actionUntil = 0; }
   renderer.render(scene, camera);
 });
 
@@ -168,7 +169,7 @@ function endPointer(event) {
 }
 mount.addEventListener('pointerup', endPointer); mount.addEventListener('pointercancel', endPointer);
 mount.addEventListener('wheel', event => { event.preventDefault(); distance = THREE.MathUtils.clamp(distance + event.deltaY * .004, 4.2, 11); updateCamera(); }, { passive: false });
-function triggerLiAction(){ actionMode=(actionMode+1)%2; actionStart=performance.now(); actionUntil=actionStart+(actionMode===1?1500:1900); objectLabel.textContent=actionMode===1?'动作：前空翻':'动作：摇头、点头、转身'; setTimeout(()=>{objectLabel.textContent='李清照 · 参考图艺术化三维造型'},2200); }
+function triggerLiAction(){ actionMode=(actionMode+1)%2; actionStart=performance.now(); actionUntil=actionStart+(actionMode===1?1800:1900); objectLabel.textContent=actionMode===1?'动作：前空翻（上升翻转回落）':'动作：摇头、点头、转身'; setTimeout(()=>{objectLabel.textContent='李清照 · 参考图艺术化三维造型'},2400); }
 document.querySelector('#reset').addEventListener('click', () => { yaw = initial.yaw; pitch = initial.pitch; distance = initial.distance; updateCamera(); });
 const objectLabel = document.querySelector('#objectLabel');
 document.querySelectorAll('.model-choice').forEach(button => button.addEventListener('click', () => {
