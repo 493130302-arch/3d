@@ -6,6 +6,7 @@ if not exist "%NODE_EXE%" (
   pause
   exit /b 1
 )
-echo 中国古代陶俑数字展馆正在启动……
+echo 手机扫码看3D模型正在启动……
 "%NODE_EXE%" "%~dp0server.cjs"
 pause
+
