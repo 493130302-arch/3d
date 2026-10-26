@@ -74,7 +74,7 @@ for (const y of [1.12, 1.21, 1.76]) {
 
 // Image-inspired bronze mask model. This is a volumetric educational interpretation,
 // not a scan or a claim about a specific museum object.
-const maskFigure = new THREE.Group(); scene.add(maskFigure); maskFigure.visible = true; figure.visible = false;
+const maskFigure = new THREE.Group(); scene.add(maskFigure); maskFigure.visible = false; figure.visible = true;
 const bronze = new THREE.MeshStandardMaterial({ color: 0x3e7068, roughness: .62, metalness: .48 });
 const bronzeDark = new THREE.MeshStandardMaterial({ color: 0x183a38, roughness: .72, metalness: .35 });
 const bronzePatina = new THREE.MeshStandardMaterial({ color: 0x7b9a79, roughness: .78, metalness: .25 });
@@ -87,6 +87,34 @@ maskBox(bronzePatina, [0, 1.51, .24], [.16, .52, .16]);
 const maskMouth = new THREE.Mesh(new THREE.TorusGeometry(.34, .065, 8, 32), bronzeDark); maskMouth.position.set(0, 1.08, .245); maskMouth.scale.y = .43; maskFigure.add(maskMouth);
 for (let i = -3; i <= 3; i++) maskBox(bronzePatina, [i * .075, 1.08, .31], [.038, .22, .045]);
 maskBox(bronzePatina, [-.98, .95, 0], [.22, .7, .38]); maskBox(bronzePatina, [.98, .95, 0], [.22, .7, .38]); maskFigure.position.y = -.18;
+
+// 李清照艺术化网页模型：月白宋制长裙、青黛披帛、高髻与折扇。
+const liqing = new THREE.Group(); scene.add(liqing); liqing.visible = true; figure.visible = false;
+const porcelain = new THREE.MeshStandardMaterial({color:0xd9e4e4, roughness:.72});
+const blueSilk = new THREE.MeshStandardMaterial({color:0x7896a0, roughness:.62});
+const skinLi = new THREE.MeshStandardMaterial({color:0xf0c0a4, roughness:.78});
+const hairLi = new THREE.MeshStandardMaterial({color:0x19191b, roughness:.4, metalness:.05});
+const goldLi = new THREE.MeshStandardMaterial({color:0xc69b54, roughness:.3, metalness:.65});
+function coneLi(pos,r1,r2,h,material){const m=new THREE.Mesh(new THREE.ConeGeometry(r1,r2,h,32),material);m.position.set(...pos);m.castShadow=true;liqing.add(m);return m;}
+// layered long dress and sleeves
+coneLi([0,1.25,0],.72,.40,1.95,porcelain);
+coneLi([0,2.12,0],.48,.34,.72,blueSilk);
+ellipsoid(liqing,porcelain,[0,2.48,0],[.43,.34,.30],24);
+ellipsoid(liqing,skinLi,[0,3.10,.02],[.31,.39,.27],24);
+// hair bun and ornaments
+ellipsoid(liqing,hairLi,[0,3.48,0],[.38,.30,.25],24); ellipsoid(liqing,hairLi,[0,3.73,0],[.27,.22,.22],24);
+for(const x of [-.14,.14]) ellipsoid(liqing,hairLi,[x,3.14,.255],[.032,.018,.018],12);
+const pin=new THREE.Mesh(new THREE.CylinderGeometry(.018,.018,.72,12),goldLi); pin.rotation.z=Math.PI/2; pin.position.set(0,3.77,.02); liqing.add(pin);
+// eyebrows and lips
+for(const x of [-.12,.12]) { const brow=new THREE.Mesh(new THREE.TorusGeometry(.075,.012,6,16,Math.PI),hairLi); brow.position.set(x,3.22,.275); brow.rotation.x=Math.PI/2; liqing.add(brow); }
+ellipsoid(liqing,new THREE.MeshStandardMaterial({color:0x9d4e55,roughness:.6}),[0,3.00,.28],[.055,.018,.018],12);
+// wide sleeves, hands and waist sash
+for(const s of [-1,1]) { ellipsoid(liqing,porcelain,[s*.55,2.35,0],[.27,.48,.28],20); ellipsoid(liqing,skinLi,[s*.30,2.22,.28],[.11,.16,.10],16); }
+const sash=new THREE.Mesh(new THREE.TorusGeometry(.43,.035,8,40),blueSilk); sash.rotation.x=Math.PI/2; sash.position.y=2.18; liqing.add(sash);
+const sashTail=new THREE.Mesh(new THREE.BoxGeometry(.08,.58,.035),blueSilk); sashTail.position.set(.15,1.85,.33); sashTail.rotation.z=-.12; liqing.add(sashTail);
+// open folding fan held in front
+for(let i=-3;i<=3;i++){const a=i*.16; const fan=new THREE.Mesh(new THREE.BoxGeometry(.025,.62,.025),goldLi); fan.position.set(i*.065,2.52,.42); fan.rotation.z=a; liqing.add(fan);}
+const fanArc=new THREE.Mesh(new THREE.TorusGeometry(.30,.025,8,32,Math.PI),porcelain); fanArc.position.set(0,2.54,.42); fanArc.rotation.x=Math.PI/2; liqing.add(fanArc);
 
 const initial = { yaw: .35, pitch: -.035, distance: 7.7 };
 let yaw = initial.yaw, pitch = initial.pitch, distance = initial.distance;
@@ -122,9 +150,9 @@ mount.addEventListener('wheel', event => { event.preventDefault(); distance = TH
 document.querySelector('#reset').addEventListener('click', () => { yaw = initial.yaw; pitch = initial.pitch; distance = initial.distance; updateCamera(); });
 const objectLabel = document.querySelector('#objectLabel');
 document.querySelectorAll('.model-choice').forEach(button => button.addEventListener('click', () => {
-  const mask = button.dataset.model === 'mask'; maskFigure.visible = mask; figure.visible = !mask;
+  const mask = button.dataset.model === 'mask'; maskFigure.visible = false; liqing.visible = mask; figure.visible = false;
   document.querySelectorAll('.model-choice').forEach(b => b.classList.toggle('active', b === button));
-  objectLabel.textContent = mask ? '青铜面具 · 图片启发的演示造型' : '壁画人物 · 图片启发的演示造型';
+  objectLabel.textContent = mask ? '李清照 · 参考图艺术化三维造型' : '李清照 · 参考图艺术化三维造型';
   yaw = initial.yaw; pitch = initial.pitch; distance = initial.distance; updateCamera();
 }));
 
