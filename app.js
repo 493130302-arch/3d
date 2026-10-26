@@ -134,7 +134,7 @@ renderer.setAnimationLoop((time) => {
   if (time - lastFrame < 33) return; lastFrame = time;
   if (actionUntil && time < actionUntil) {
     const p = (time - actionStart) / 1100;
-    const wave = Math.sin(p * Math.PI * 2) * .12;
+    const wave = Math.sin(p * Math.PI * 2) * .42;
     liqing.rotation.y = wave;
     liqing.position.y = Math.sin(p * Math.PI * 2) * .035;
   } else if (actionUntil) { liqing.rotation.y = 0; liqing.position.y = 0; actionUntil = 0; }
@@ -162,7 +162,8 @@ mount.addEventListener('click', event => {
   raycaster.setFromCamera(pointer, camera);
   if (raycaster.intersectObjects(liqing.children, true).length) {
     actionStart = performance.now(); actionUntil = actionStart + 1100;
-    status.textContent = '已触发动作：李清照轻轻转身致意'; loading.classList.remove('done'); setTimeout(() => loading.classList.add('done'), 1200);
+    objectLabel.textContent = '动作：李清照转身致意';
+    setTimeout(() => { objectLabel.textContent = '李清照 · 参考图艺术化三维造型'; }, 1500);
   }
 });
 document.querySelector('#reset').addEventListener('click', () => { yaw = initial.yaw; pitch = initial.pitch; distance = initial.distance; updateCamera(); });
