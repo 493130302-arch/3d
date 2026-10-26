@@ -130,17 +130,18 @@ function resize() {
   renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
 }
 new ResizeObserver(resize).observe(mount); resize(); updateCamera();
-let lastFrame = 0, actionUntil = 0, actionStart = 0;
+let lastFrame = 0, actionUntil = 0, actionStart = 0, actionMode = 0;
 renderer.setAnimationLoop((time) => {
   if (time - lastFrame < 33) return; lastFrame = time;
   if (actionUntil && time < actionUntil) {
     const p = (time - actionStart) / 1900;
     const wave = Math.sin(p * Math.PI * 4) * .42;
-    liqing.rotation.y = wave;
+    liqing.rotation.y = actionMode === 1 ? 0 : wave;
+    liqing.rotation.x = actionMode === 1 ? p * Math.PI * 2 : 0;
     liqing.position.y = Math.sin(p * Math.PI * 2) * .035;
     const nod = Math.sin(p * Math.PI * 4) * .16;
     for (const h of headParts) h.rotation.x = nod;
-  } else if (actionUntil) { liqing.rotation.y = 0; liqing.position.y = 0; for (const h of headParts) h.rotation.x = 0; actionUntil = 0; }
+  } else if (actionUntil) { liqing.rotation.x = 0; liqing.rotation.y = 0; liqing.position.y = 0; for (const h of headParts) h.rotation.x = 0; actionUntil = 0; }
   renderer.render(scene, camera);
 });
 
@@ -167,7 +168,7 @@ function endPointer(event) {
 }
 mount.addEventListener('pointerup', endPointer); mount.addEventListener('pointercancel', endPointer);
 mount.addEventListener('wheel', event => { event.preventDefault(); distance = THREE.MathUtils.clamp(distance + event.deltaY * .004, 4.2, 11); updateCamera(); }, { passive: false });
-function triggerLiAction(){ actionStart=performance.now(); actionUntil=actionStart+1900; objectLabel.textContent='动作：摇头、点头、转身'; setTimeout(()=>{objectLabel.textContent='李清照 · 参考图艺术化三维造型'},2200); }
+function triggerLiAction(){ actionMode=(actionMode+1)%2; actionStart=performance.now(); actionUntil=actionStart+(actionMode===1?1500:1900); objectLabel.textContent=actionMode===1?'动作：前空翻':'动作：摇头、点头、转身'; setTimeout(()=>{objectLabel.textContent='李清照 · 参考图艺术化三维造型'},2200); }
 const raycaster = new THREE.Raycaster(), pointer = new THREE.Vector2();
 mount.addEventListener('click', event => {
   const rect = mount.getBoundingClientRect(); pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1; pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
